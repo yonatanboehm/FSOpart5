@@ -5,12 +5,21 @@ const Blog = (blog) => {
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
 
+  const isUserUploader = blog.usernameBlog === blog.usernameUser ? {display: ''} : {display: 'none'}
+
   const toggleVisibility = () => {
     setVisible(!visible)
   }
 
   const likeBlog = async () => {
     await blog.handleUpdate(blog.id)
+  }
+
+  const removeBlog = async () => {
+    if (window.confirm(`Remove blog "${blog.title}" by ${blog.author}?`)) {
+      await blog.handleRemove(blog.id)
+    }
+    return
   }
 
   const blogStyle = {
@@ -28,11 +37,11 @@ const Blog = (blog) => {
         <div>{blog.title} {blog.author} <button onClick={toggleVisibility}>view</button></div>
       </div>
       <div style={showWhenVisible}>
-        <div>{blog.title} {blog.author}</div>
+        <div>{blog.title} {blog.author} <button onClick={toggleVisibility}>hide</button></div>
         <div>{blog.url}</div>
         <div>{blog.likes} <button onClick={likeBlog}>like</button></div>
         <div>{blog.user}</div>
-        <button onClick={toggleVisibility}>cancel</button>
+        <div style={isUserUploader}><button onClick={removeBlog}>remove</button></div>
       </div>
     </div>  
   )

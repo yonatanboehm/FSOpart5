@@ -27,9 +27,10 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )  
+    blogService.getAll().then(blogs => {
+      const sortedBlogs = blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
+      setBlogs( sortedBlogs )
+    })  
   }, [])
 
   useEffect(() => {
@@ -75,7 +76,7 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     try {
       const returnedBlog = await blogService.create(blogObject)
-      console.log(returnedBlog)
+      returnedBlog.user = user
       setBlogs(blogs.concat(returnedBlog))
       setMessage({
         message: `a new blog "${returnedBlog.title}" by ${returnedBlog.author} added.`,
@@ -100,13 +101,38 @@ const App = () => {
       const returnedBlog = await blogService.getOne(id)
       returnedBlog.likes++
       await blogService.update(id, returnedBlog)
-      
+
       const likedBlog = blogs.find(blog => blog.id === id)
       likedBlog.likes++
       const updatedBlogs = blogs.map(blog => blog.id === id ? likedBlog : blog)
+      const sortedBlogs = updatedBlogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
+      setBlogs( sortedBlogs )
       setBlogs(updatedBlogs)
     } catch (exception) {
       console.log(exception)
+      setMessage({ 
+        message: exception.response.data.error,
+        type: false
+      }) // test this
+      setTimeout(() => {
+        setMessage({ message: null, type: null})
+      }, 5000)
+    }
+  }
+
+  const handleRemove = async (id) => {
+    try {
+      await blogService.remove(id)
+      const blogsAfterDelete = blogs.filter(blog => blog.id !== id)
+      setBlogs(blogsAfterDelete)
+      setMessage({ 
+        message: `Deleted blog`,
+        type: true
+      })
+      setTimeout(() => {
+        setMessage({ message: null, type: null})
+      }, 5000)
+    } catch (exception) {
       setMessage({ 
         message: exception.response.data.error,
         type: false
@@ -174,8 +200,11 @@ const App = () => {
             author={blog.author}
             likes={blog.likes}
             user={blog?.user?.name === undefined ? user.name : blog.user.name}
+            usernameBlog={blog.user.username}
+            usernameUser={user.username}
             id={blog.id}
             handleUpdate={handleUpdate}
+            handleRemove={handleRemove}
           />
         )}
       </div>
