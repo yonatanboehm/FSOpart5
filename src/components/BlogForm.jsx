@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const BlogForm = ({ handleCreate }) => {
+const BlogForm = ({ handleCreate, user }) => {
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('') 
   const [url, setUrl] = useState('') 
@@ -10,7 +10,10 @@ const BlogForm = ({ handleCreate }) => {
     const blogObject = {
       title,
       url,
-      author
+      author,
+      user: {
+        name: user.name
+      }
     }
     await handleCreate(blogObject)
     setAuthor('')

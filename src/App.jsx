@@ -75,6 +75,7 @@ const App = () => {
     blogFormRef.current.toggleVisibility()
     try {
       const returnedBlog = await blogService.create(blogObject)
+      console.log(returnedBlog)
       setBlogs(blogs.concat(returnedBlog))
       setMessage({
         message: `a new blog "${returnedBlog.title}" by ${returnedBlog.author} added.`,
@@ -84,6 +85,28 @@ const App = () => {
         setMessage({ message: null, type: null})
       }, 5000)
     } catch (exception) {
+      setMessage({ 
+        message: exception.response.data.error,
+        type: false
+      }) // test this
+      setTimeout(() => {
+        setMessage({ message: null, type: null})
+      }, 5000)
+    }
+  }
+
+  const handleUpdate = async (id) => {
+    try {
+      const returnedBlog = await blogService.getOne(id)
+      returnedBlog.likes++
+      await blogService.update(id, returnedBlog)
+      
+      const likedBlog = blogs.find(blog => blog.id === id)
+      likedBlog.likes++
+      const updatedBlogs = blogs.map(blog => blog.id === id ? likedBlog : blog)
+      setBlogs(updatedBlogs)
+    } catch (exception) {
+      console.log(exception)
       setMessage({ 
         message: exception.response.data.error,
         type: false
@@ -140,7 +163,7 @@ const App = () => {
         <h2>create new</h2>
       </div>
       <Togglable buttonLabel='create blog' ref={blogFormRef}>
-        <BlogForm handleCreate={handleCreate} />
+        <BlogForm handleCreate={handleCreate} user={user}/>
       </Togglable>
       <div>
         {blogs.map(blog =>
@@ -150,7 +173,9 @@ const App = () => {
             url={blog.url}
             author={blog.author}
             likes={blog.likes}
-            user={blog?.user?.name === undefined ? user.name : blog?.user?.name}
+            user={blog?.user?.name === undefined ? user.name : blog.user.name}
+            id={blog.id}
+            handleUpdate={handleUpdate}
           />
         )}
       </div>

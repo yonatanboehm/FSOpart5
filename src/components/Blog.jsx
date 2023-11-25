@@ -9,6 +9,10 @@ const Blog = (blog) => {
     setVisible(!visible)
   }
 
+  const likeBlog = async () => {
+    await blog.handleUpdate(blog.id)
+  }
+
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -26,7 +30,7 @@ const Blog = (blog) => {
       <div style={showWhenVisible}>
         <div>{blog.title} {blog.author}</div>
         <div>{blog.url}</div>
-        <div>{blog.likes} <button>like</button></div>
+        <div>{blog.likes} <button onClick={likeBlog}>like</button></div>
         <div>{blog.user}</div>
         <button onClick={toggleVisibility}>cancel</button>
       </div>
