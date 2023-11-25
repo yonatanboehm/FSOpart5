@@ -5,7 +5,7 @@ const Blog = (blog) => {
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
 
-  const isUserUploader = blog.usernameBlog === blog.usernameUser ? {display: ''} : {display: 'none'}
+  const isUserUploader = blog.usernameBlog === blog.usernameUser ? { display: '' } : { display: 'none' }
 
   const toggleVisibility = () => {
     setVisible(!visible)
@@ -43,7 +43,7 @@ const Blog = (blog) => {
         <div>{blog.user}</div>
         <div style={isUserUploader}><button onClick={removeBlog}>remove</button></div>
       </div>
-    </div>  
+    </div>
   )
 }
 

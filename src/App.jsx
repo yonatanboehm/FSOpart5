@@ -21,16 +21,16 @@ const Notification = (message) => {
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [message, setMessage] = useState({ message: null, type: null}) 
+  const [message, setMessage] = useState({ message: null, type: null })
   const [user, setUser] = useState(null)
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
       const sortedBlogs = blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
       setBlogs( sortedBlogs )
-    })  
+    })
   }, [])
 
   useEffect(() => {
@@ -46,22 +46,22 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
       })
       window.localStorage.setItem(
         'loggedNoteappUser', JSON.stringify(user)
-      ) 
+      )
       setUser(user)
       setUsername('')
       setPassword('')
       blogService.setToken(user.token)
     } catch (exception) {
-      setMessage({ message: exception.response.data.error, type: null})
+      setMessage({ message: exception.response.data.error, type: null })
       setTimeout(() => {
-        setMessage({ message: null, type: null})
+        setMessage({ message: null, type: null })
       }, 5000)
     }
   }
@@ -83,15 +83,15 @@ const App = () => {
         type: true
       })
       setTimeout(() => {
-        setMessage({ message: null, type: null})
+        setMessage({ message: null, type: null })
       }, 5000)
     } catch (exception) {
-      setMessage({ 
+      setMessage({
         message: exception.response.data.error,
         type: false
       }) // test this
       setTimeout(() => {
-        setMessage({ message: null, type: null})
+        setMessage({ message: null, type: null })
       }, 5000)
     }
   }
@@ -110,12 +110,12 @@ const App = () => {
       setBlogs(updatedBlogs)
     } catch (exception) {
       console.log(exception)
-      setMessage({ 
+      setMessage({
         message: exception.response.data.error,
         type: false
       }) // test this
       setTimeout(() => {
-        setMessage({ message: null, type: null})
+        setMessage({ message: null, type: null })
       }, 5000)
     }
   }
@@ -125,20 +125,20 @@ const App = () => {
       await blogService.remove(id)
       const blogsAfterDelete = blogs.filter(blog => blog.id !== id)
       setBlogs(blogsAfterDelete)
-      setMessage({ 
-        message: `Deleted blog`,
+      setMessage({
+        message: 'Deleted blog',
         type: true
       })
       setTimeout(() => {
-        setMessage({ message: null, type: null})
+        setMessage({ message: null, type: null })
       }, 5000)
     } catch (exception) {
-      setMessage({ 
+      setMessage({
         message: exception.response.data.error,
         type: false
       }) // test this
       setTimeout(() => {
-        setMessage({ message: null, type: null})
+        setMessage({ message: null, type: null })
       }, 5000)
     }
   }
@@ -147,7 +147,7 @@ const App = () => {
     <form onSubmit={handleLogin}>
       <div>
         username
-          <input
+        <input
           type="text"
           value={username}
           name="Username"
@@ -156,7 +156,7 @@ const App = () => {
       </div>
       <div>
         password
-          <input
+        <input
           type="password"
           value={password}
           name="Password"
@@ -164,7 +164,7 @@ const App = () => {
         />
       </div>
       <button type="submit">login</button>
-    </form>      
+    </form>
   )
   if (user === null) {
     return (
@@ -193,8 +193,8 @@ const App = () => {
       </Togglable>
       <div>
         {blogs.map(blog =>
-          <Blog 
-            key={blog.id} 
+          <Blog
+            key={blog.id}
             title={blog.title}
             url={blog.url}
             author={blog.author}
