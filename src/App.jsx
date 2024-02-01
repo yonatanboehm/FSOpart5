@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import BlogForm from './components/BlogForm'
+import LoginForm from './components/LoginForm'
 import Togglable from './components/Togglable'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -21,8 +22,6 @@ const Notification = (message) => {
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
   const [message, setMessage] = useState({ message: null, type: null })
   const [user, setUser] = useState(null)
 
@@ -34,7 +33,7 @@ const App = () => {
   }, [])
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser')
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
@@ -44,19 +43,16 @@ const App = () => {
 
   const blogFormRef = useRef()
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (username, password) => {
 
     try {
       const user = await loginService.login({
         username, password,
       })
       window.localStorage.setItem(
-        'loggedNoteappUser', JSON.stringify(user)
+        'loggedBlogappUser', JSON.stringify(user)
       )
       setUser(user)
-      setUsername('')
-      setPassword('')
       blogService.setToken(user.token)
     } catch (exception) {
       setMessage({ message: exception.response.data.error, type: null })
@@ -67,7 +63,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedNoteappUser')
+    window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
     blogService.setToken(null)
   }
@@ -143,35 +139,13 @@ const App = () => {
     }
   }
 
-  const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        password
-        <input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <button type="submit">login</button>
-    </form>
-  )
   if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
         <Notification message={message.message} type={message.type} />
-        { loginForm() }
+
+        <LoginForm handleLogin={handleLogin} />
       </div>
     )
   }
@@ -199,9 +173,9 @@ const App = () => {
             url={blog.url}
             author={blog.author}
             likes={blog.likes}
-            user={blog?.user?.name === undefined ? user.name : blog.user.name}
-            usernameBlog={blog.user.username}
-            usernameUser={user.username}
+            user={blog?.user?.name === undefined ? '' : blog.user.name}
+            usernameBlog={blog?.user?.username} // question mark because no creating user in test ENV
+            usernameUser={user?.username}
             id={blog.id}
             handleUpdate={handleUpdate}
             handleRemove={handleRemove}
