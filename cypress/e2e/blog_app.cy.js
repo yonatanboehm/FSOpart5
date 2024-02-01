@@ -28,7 +28,13 @@ describe('Blog app', function() {
       username: 'yonatan',
       password: '1234'
     }
-    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user) 
+    const user2 = {
+      name: 'YBtest',
+      username: 'yoav',
+      password: '1234'
+    }
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user)
+    cy.request('POST', `${Cypress.env('BACKEND')}/users/`, user2)
 
     cy.visit('')
   })
@@ -66,7 +72,7 @@ describe('Blog app', function() {
       cy.get('#create-blog').click()
       cy.contains('a new blog "cypress blog title" by cypress added.')
     })
-    it.only('user can delete his created blog', function () {
+    it('user can delete his created blog', function () {
       cy.contains('create blog').click()
       cy.get('#title').type('cypress blog title')
       cy.get('#url').type('cy.press.com')
@@ -100,6 +106,15 @@ describe('Blog app', function() {
         cy.contains('cypress blog title2 cypress2').contains('view').click()
         cy.contains('cypress blog title2 cypress2 hide').contains('0').contains('like').click()
         cy.contains('cypress blog title2 cypress2 hide').contains('1').contains('like')
+      })
+
+      it.only('a non creator cant see remove button', function () {
+        cy.contains('cypress blog title2 cypress2').contains('view').click()
+        cy.contains('cypress blog title2 cypress2 hide').contains('remove').should('be.visible')
+        cy.contains('log out').click()
+        cy.login({ username: 'yoav', password: '1234' })
+        cy.contains('cypress blog title2 cypress2').contains('view').click()
+        cy.contains('cypress blog title2 cypress2 hide').contains('remove').should('not.be.visible')
       })
 
     })
