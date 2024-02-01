@@ -108,7 +108,7 @@ describe('Blog app', function() {
         cy.contains('cypress blog title2 cypress2 hide').contains('1').contains('like')
       })
 
-      it.only('a non creator cant see remove button', function () {
+      it('a non creator cant see remove button', function () {
         cy.contains('cypress blog title2 cypress2').contains('view').click()
         cy.contains('cypress blog title2 cypress2 hide').contains('remove').should('be.visible')
         cy.contains('log out').click()
@@ -116,7 +116,17 @@ describe('Blog app', function() {
         cy.contains('cypress blog title2 cypress2').contains('view').click()
         cy.contains('cypress blog title2 cypress2 hide').contains('remove').should('not.be.visible')
       })
+      it.only('blogs organized by number of likes', function () {
+        cy.contains('cypress blog title2 cypress2').contains('view').click()
+        cy.contains('cypress blog title2 cypress2 hide').contains('0').contains('like').click()
+        cy.contains('cypress blog title3 cypress3').contains('view').click()
+        cy.contains('cypress blog title3 cypress3 hide').contains('0').contains('like').click()
+        cy.contains('cypress blog title2 cypress2 hide').contains('1').contains('like').click()
 
+        cy.get('.blog').eq(0).should('contain', 'cypress blog title2 cypress2')
+        cy.get('.blog').eq(1).should('contain', 'cypress blog title3 cypress3')
+        cy.get('.blog').eq(2).should('contain', 'cypress blog title cypress')
+      })
     })
   })
 })
